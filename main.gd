@@ -1,15 +1,16 @@
 extends Node2D
 
-
+@export var server_mode = false
 
 func _ready() -> void:
-	if OS.has_feature("dedicated_server"):
+	if OS.has_feature("dedicated_server") or server_mode:
 		var server : Node = load("res://server/server.gd").new()
 		server.name = "Server"
 		add_child(server)
 		print("Server started.")
 	else:
-		var server = load("res://server/server.gd").new()
-		server.name = "Server"
-		add_child(server)
-		print("Server started.")
+		var lobby : PackedScene = load("res://entities/pre-lobby/pre_lobby.tscn")
+		var lobby_instance = lobby.instantiate()
+		add_child(lobby_instance)
+		print("Lobby started.")
+ 

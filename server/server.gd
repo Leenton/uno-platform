@@ -28,7 +28,7 @@ func update_player(player_id):
 
 func _on_peer_connected(id):
 	print("Client connected: %s" % id)
-	
+	LobbyState.update_lobby_players()
 
 func _on_peer_disconnected(id):
 	print("Client disconnected: %s" % id)
