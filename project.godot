@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="uno-platform"
+run/main_scene="uid://drl01ufrjmjes"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+LobbyState="*res://autoloads/lobby_state.gd"
 
 [rendering]
 
