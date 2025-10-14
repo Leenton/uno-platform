@@ -17,26 +17,29 @@ func join_lobby():
 	if error:
 		return error
 	multiplayer.multiplayer_peer = peer
-	
 
 func _on_connected_to_server():
-	_register_player.rpc(player_info)
+	_register_player.rpc_id(1, player_info)
 	
-
-
 func update_lobby_players():
 	pass
-
-
 
 func _on_connection_failed():
 	pass
 
+@rpc("authority", "reliable")
+func _sync_players(updated_players):
+	players = updated_players
+	print(players)
 
 @rpc("any_peer", "reliable")
 func _register_player(new_player_info):
-	var new_player_id = multiplayer.get_remote_sender_id()
-	players[new_player_id] = new_player_info
+	players[new_player_info['name']] = {
+		"name": new_player_info['name'],
+		"id": multiplayer.get_remote_sender_id()
+	}
+	_sync_players.rpc(players)
+	print("sync called")
 
 func create_table(_name):
 	# Updates the tables dict with the new tables the client wants to add
@@ -48,4 +51,7 @@ func delete_table(_name):
 	
 func join_table(_name):
 	# Join the table 
+	pass
+
+func display_tables():
 	pass

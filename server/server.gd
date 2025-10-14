@@ -1,10 +1,7 @@
 extends Node
 
-
 const PORT = 42069
 const MAX_CONNECTIONS = 4095
-
-
 
 func _ready():
 	multiplayer.peer_connected.connect(_on_peer_connected)
