@@ -1,9 +1,8 @@
 extends Node2D
 
-@export var server_mode = false
 
 func _ready() -> void:
-	if OS.has_feature("dedicated_server") or server_mode:
+	if OS.has_feature("dedicated_server") or Debugger.server_mode:
 		print("Server started.")
 	else:
 		print("starting")

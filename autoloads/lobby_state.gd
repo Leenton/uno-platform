@@ -1,7 +1,7 @@
 extends Node
 
-const SERVER_ADDRESS = '127.0.0.1'
 const PORT = 42069
+var server_address = '127.0.0.1'
 var players = {}
 var player: Player
 var players_loaded = 0
@@ -13,12 +13,13 @@ signal updated_lobby_player_list
 func _ready() -> void:
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.peer_disconnected.connect(_player_disconnected)
+	multiplayer.connection_failed.connect(_on_connection_failed)
 
 func _on_connected_to_server():
 	_handle_new_player.rpc_id(1, player.name)
 
 func _on_connection_failed():
-	pass
+	print("connection failed")
 	
 func _player_disconnected(player_id):
 	players[player_id]['connection_status'] = Player.ConnectionStatus.DISCONNECTED
@@ -62,7 +63,9 @@ func _enter_lobby() -> void:
 
 func join_lobby():
 	var peer = ENetMultiplayerPeer.new()
-	var error = peer.create_client(LobbyState.SERVER_ADDRESS, LobbyState.PORT)
+	print("Connecting to server %s on port %d..." % [LobbyState.server_address, LobbyState.PORT])
+	var error = peer.create_client(LobbyState.server_address, LobbyState.PORT)
+	print(error)
 	if error:
 		return error
 	multiplayer.multiplayer_peer = peer
