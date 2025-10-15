@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://f6hw1ys4hcgc"]
+
+[ext_resource type="Script" uid="uid://bglbx4j6x54b8" path="res://entities/lobby/lobby.gd" id="1_eda4n"]
+
+[node name="Lobby" type="Node"]
+script = ExtResource("1_eda4n")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Control/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TableNameLabel" type="Label" parent="Control/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Name"
+
+[node name="TableNameTextEdit" type="TextEdit" parent="Control/HBoxContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+
+[node name="CreateTableButton" type="Button" parent="Control/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Create Table"
