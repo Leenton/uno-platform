@@ -1,6 +1,6 @@
 extends Node
 
-const PORT = 42069
+const PORT = 8080
 var server_address = '127.0.0.1'
 var players = {}
 var player: Player
