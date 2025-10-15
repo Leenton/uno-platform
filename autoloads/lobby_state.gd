@@ -3,7 +3,7 @@ extends Node
 const SERVER_ADDRESS = '127.0.0.1'
 const PORT = 42069
 var players = {}
-var player_info = {}
+var player: Player
 var players_loaded = 0
 var tables = {}
 
@@ -11,12 +11,18 @@ signal updated_lobby_player_list
 
 func _ready() -> void:
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
+	multiplayer.peer_disconnected.connect(_player_disconnected)
 
 func _on_connected_to_server():
-	_register_player.rpc_id(1, player_info)
+	_handle_new_player.rpc_id(1, player)
 
 func _on_connection_failed():
 	pass
+	
+func _player_disconnected(player_id):
+	players[player_id]['connection_status'] = Player.ConnectionStatus.DISCONNECTED
+	_sync_players.rpc(1, players)
+	emit_signal("player_disconnected", player_id)
 
 @rpc("authority", "reliable")
 func _sync_players(updated_players):
@@ -25,11 +31,17 @@ func _sync_players(updated_players):
 	emit_signal("updated_lobby_player_list")
 
 @rpc("any_peer", "reliable")
-func _register_player(new_player_info):
-	players[new_player_info['name']] = {
-		"name": new_player_info['name'],
-		"id": multiplayer.get_remote_sender_id()
-	}
+func _handle_new_player(new_player: Player):
+	# If the player had previously connected we need to update 
+	if len(new_player.name) == 0:
+		return
+	
+	if(players[new_player.name.to_lower()] and players[new_player.name.to_lower()]["connection_status"] == Player.ConnectionStatus.CONNECTED):
+		return
+	
+	players[new_player.name.to_lower()]["name"] = new_player.name
+	players[new_player.name.to_lower()]["id"] = multiplayer.get_remote_sender_id()
+	players[new_player.name.to_lower()]["connection_status"] = Player.ConnectionStatus.CONNECTED
 	_sync_players.rpc(players)
 	
 func join_lobby():
@@ -43,7 +55,8 @@ func create_table(table_name: String):
 	# Create a new table with the user who requested it as the first player
 	_create_table.rpc_id(1, {
 		"name": table_name,
-		"players": [player_info['name']],
+		"players": [player.name],
+		"spectators": [],
 		"rules": [],
 		"max_players": 12,
 		"state": "Waiting to start game"

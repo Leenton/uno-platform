@@ -11,12 +11,7 @@ func _on_join_button_pressed() -> void:
 	
 	if (len(player_name) == 0):
 		return
-	
-	var already_connected_players = []
-	if (player_name in already_connected_players):
-		return
-		
-	LobbyState.player_info['name'] = player_name
+
 	LobbyState.join_lobby()
 	
 	add_child(load("res://entities/lobby/lobby.tscn").instantiate())

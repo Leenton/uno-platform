@@ -12,5 +12,5 @@ func update_player_list():
 	print(player_list_vbox.get_child_count())
 	for player: String in LobbyState.players.keys():
 		var label := Label.new()
-		label.text = player
 		player_list_vbox.add_child(label)
+		label.text = player
