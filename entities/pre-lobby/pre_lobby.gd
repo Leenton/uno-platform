@@ -13,5 +13,6 @@ func _on_join_button_pressed() -> void:
 		return
 
 	LobbyState.join_lobby()
-	
+
 	add_child(load("res://entities/lobby/lobby.tscn").instantiate())
+	

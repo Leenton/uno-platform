@@ -9,12 +9,13 @@ var tables = {}
 
 signal updated_lobby_player_list
 
+
 func _ready() -> void:
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.peer_disconnected.connect(_player_disconnected)
 
 func _on_connected_to_server():
-	_handle_new_player.rpc_id(1, player)
+	_handle_new_player.rpc_id(1, player.name)
 
 func _on_connection_failed():
 	pass
@@ -31,19 +32,34 @@ func _sync_players(updated_players):
 	emit_signal("updated_lobby_player_list")
 
 @rpc("any_peer", "reliable")
-func _handle_new_player(new_player: Player):
-	# If the player had previously connected we need to update 
-	if len(new_player.name) == 0:
+func _handle_new_player(new_player_name: String) -> void:
+	if new_player_name.is_empty():
 		return
-	
-	if(players[new_player.name.to_lower()] and players[new_player.name.to_lower()]["connection_status"] == Player.ConnectionStatus.CONNECTED):
+
+	var sender_id := multiplayer.get_remote_sender_id()
+	var key := new_player_name.to_lower()
+
+	if not players.has(key):
+		players[key] = {}
+
+	if players[key].get("connection_status") == Player.ConnectionStatus.CONNECTED:
 		return
-	
-	players[new_player.name.to_lower()]["name"] = new_player.name
-	players[new_player.name.to_lower()]["id"] = multiplayer.get_remote_sender_id()
-	players[new_player.name.to_lower()]["connection_status"] = Player.ConnectionStatus.CONNECTED
+
+	players[key]["name"] = new_player_name
+	players[key]["id"] = sender_id
+	players[key]["connection_status"] = Player.ConnectionStatus.CONNECTED
+
 	_sync_players.rpc(players)
-	
+	_enter_lobby.rpc_id(sender_id)
+
+
+@rpc("authority", "call_local", "reliable")
+func _enter_lobby() -> void:
+	var lobby_packed: PackedScene = preload("res://entities/lobby/lobby.tscn")
+	get_tree().change_scene_to_packed(lobby_packed)
+
+
+
 func join_lobby():
 	var peer = ENetMultiplayerPeer.new()
 	var error = peer.create_client(LobbyState.SERVER_ADDRESS, LobbyState.PORT)
