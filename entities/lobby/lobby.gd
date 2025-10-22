@@ -18,3 +18,6 @@ func _on_create_table_button_pressed() -> void:
 
 	LobbyState.create_table(table_name)
  
+
+func _process(delta: float) -> void:
+	pass

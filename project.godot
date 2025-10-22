@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 LobbyState="*res://autoloads/lobby_state.gd"
 Debugger="*res://entities/debugger/debugger.gd"
+EventBus="*res://autoloads/event_bus.gd"
 
 [display]
 
