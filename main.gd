@@ -1,6 +1,5 @@
 extends Node2D
 
-
 func _ready() -> void:
 	if OS.has_feature("dedicated_server") or Debugger.server_mode:
 		var server : Node = load("res://server/server.gd").new()

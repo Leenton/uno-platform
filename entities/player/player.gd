@@ -8,8 +8,12 @@ enum ConnectionStatus {
 var name: String
 var connection_status: ConnectionStatus = ConnectionStatus.DISCONNECTED
 var id: int
+var table_id: int
 
+static func make(player_name: String, player_id: int):
+	var p := Player.new()
+	p.name = player_name
+	p.connection_status = Player.ConnectionStatus.CONNECTED
+	p.id = player_id
 
-func send_join(name: String) -> void:
-	pass
-	#(1, "client_intent", Event.Type.PLAYER_JOINED, { "name": name })
+	return p
