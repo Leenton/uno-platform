@@ -1,7 +1,5 @@
 extends Node
 
-const Table = preload('res://entities/table/table.gd')
-
 func _ready():
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	var peer = ENetMultiplayerPeer.new()
@@ -23,6 +21,30 @@ func _process(_delta: float) -> void:
 	match(e.type):
 		Event.Type.PLAYER_CONNECTED:
 			_player_connected(e)
+		Event.Type.CREATE_TABLE:
+			_create_table(e)
+		Event.Type.JOIN_TABLE:
+			_join_table(e)
+		Event.Type.SET_RULES:
+			_set_rules(e)
+		Event.Type.START_GAME:
+			_start_game(e)
+		Event.Type.ABORT_GAME:
+			_abort_game(e)
+		Event.Type.DELETE_TABLE:
+			_delete_table(e)
+		Event.Type.PLAY_CARD:
+			_play_card(e)
+		Event.Type.DRAW_CARD:
+			_draw_card(e)
+		Event.Type.CALL_OUT_UNO:
+			_call_out_uno(e)
+		Event.Type.REORDER_CARDS:
+			_reorder_cards(e)
+		Event.Type.FOCUS_ON_CARD:
+			_focus_on_card(e)
+		Event.Type.CHAT:
+			_chat(e)
 		null:
 			pass
 
@@ -130,3 +152,30 @@ func _start_game(event : Event):
 	if table and table.state == Table.State.WAITING and table.creator == ServerState.players[event.source].name:
 		table.state = Table.State.IN_PROGRESS
 		# TODO: Initialize game data
+
+func _abort_game(event : Event):
+	pass
+
+func _kick_player(event : Event):
+	pass
+
+func _delete_table(event : Event):
+	pass
+
+func _play_card(event : Event):
+	pass
+
+func _draw_card(event : Event):
+	pass
+
+func _call_out_uno(event : Event):
+	pass
+
+func _reorder_cards(event : Event):
+	pass
+
+func _focus_on_card(event : Event):
+	pass
+
+func _chat(event : Event):
+	pass

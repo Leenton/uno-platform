@@ -7,7 +7,8 @@ var rules: Dictionary = {}
 var max_players: int = 12
 var state: Table.State
 var creator: String
-var game_data: Dictionary = {}
+var game_data: Dictionary = {
+}
 
 enum State {
     WAITING,
