@@ -1,6 +1,6 @@
 extends Node
 
-const Table = preload("res://entities/table/table.gd")
+const Table = preload('res://entities/table/table.gd')
 
 func _ready():
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
@@ -10,9 +10,6 @@ func _ready():
 	if error:
 		return error
 	multiplayer.multiplayer_peer = peer
-
-func _on_peer_connected(id):
-	print("Client connected: %s" % id)
 
 func _on_peer_disconnected(id):
 	ServerState.players[id].connection_status = Player.ConnectionStatus.DISCONNECTED
@@ -48,12 +45,8 @@ func _player_connected(event : Event):
 		_update_player_list_for_clients()
 
 		# If the player was in a game, re-add them to it
-		if existing_player.table_id:
-			# EventBus.push(
-			# 	Event.Type.CLIENT_ENTER_TABLE,
-			# 	{"table_state": ServerState.tables[existing_player.table_id]},
-			# 	[event.source]
-			# )
+		if ServerState.get_player_joined_table(existing_player.name) != '':
+			# TODO: Logic to rejoin the table and change game state and etc accordingly
 
 			return
 
@@ -62,38 +55,78 @@ func _player_connected(event : Event):
 		ServerState.players[event.source] = Player.make(event.payload['name'], event.source)
 		_update_player_list_for_clients()
 
-	EventBus.push(Event.Type.PLAYER_ENTER_LOBBY, {"tables": ServerState.get_tables_for_lobby_screen()}, [event.source])
+	EventBus.push(Event.Type.PLAYER_ENTER_LOBBY, {'tables': ServerState.get_tables_for_lobby_screen()}, [event.source])
 
 func _update_player_list_for_clients():
 	EventBus.push(
 		Event.Type.UPDATE_CLIENT_PLAYER_LIST,
-		{"players": ServerState.get_connected_players().map(func(p): return p.name)},
+		{'players': ServerState.get_connected_players().map(func(p): return p.name)},
 		ServerState.get_connected_players().map(func(p): return p.id)
 	)
 
-
 func _create_table(event : Event):
-	ServerState.tables.append(Table.make(
-		event.payload["table_name"],
-		{},
-		{},
-		[],
-		12,
-		"Waiting to start game"
-	))
+	var table_name: String = event.payload['table_name'].strip_edges()
+	if not ServerState.tables.get(table_name, null):
+		EventBus.push(
+			Event.Type.TABLE_ALREADY_EXISTS,
+			{'tables': ServerState.get_tables_for_lobby_screen()},
+			[event.source]
+		)
+
+		return
+	
+	var creator: String = ServerState.players[event.source].name
+
+	ServerState.tables[table_name] = Table.make(table_name, [creator],[], {}, creator)
 
 	EventBus.push(
 		Event.Type.UPDATE_TABLE_LIST,
-		{
-			"tables": ServerState.tables
-		},
+		{'tables': ServerState.get_tables_for_lobby_screen()},
 		ServerState.players.keys()
 	)	
 
 	EventBus.push(
 		Event.Type.CLIENT_ENTER_TABLE,
-		{
-			"table_state": ServerState.tables[event.payload["table_name"]]
-		},
+		{'table': ServerState.tables[event.payload['table_name']].get_data()},
 		[event.source]
 	)
+
+func _join_table(event : Event):
+	var table_name: String = event.payload['table_name']
+	var player_name: String = ServerState.players[event.source].name
+
+	var table: Table = ServerState.tables.get(table_name, null)
+	if table == null:
+		EventBus.push(
+			Event.Type.PLAYER_JOINED_NON_EXISTENT_TABLE,
+			{'tables': ServerState.get_tables_for_lobby_screen()},
+			[event.source]
+		)
+
+	table.players.append(player_name)
+
+	EventBus.push(
+		Event.Type.CLIENT_ENTER_TABLE,
+		{'table': table.get_data()},
+		[event.source]
+	)
+
+func _set_rules(event : Event):
+	var table_name: String = event.payload['table_name']
+	var rules: Dictionary = event.payload['rules']
+
+	var table: Table = ServerState.tables.get(table_name, null)
+	if table and table.state == Table.State.WAITING and table.creator == ServerState.players[event.source].name:
+		table.rules = rules
+		EventBus.push(
+			Event.Type.UPDATE_TABLE_LIST,
+			{'tables': ServerState.get_tables_for_lobby_screen()},
+			ServerState.players.keys()
+		)
+
+func _start_game(event : Event):
+	var table_name: String = event.payload['table_name']
+	var table: Table = ServerState.tables.get(table_name, null)
+	if table and table.state == Table.State.WAITING and table.creator == ServerState.players[event.source].name:
+		table.state = Table.State.IN_PROGRESS
+		# TODO: Initialize game data

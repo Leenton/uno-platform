@@ -8,7 +8,6 @@ enum ConnectionStatus {
 var name: String
 var connection_status: ConnectionStatus = ConnectionStatus.DISCONNECTED
 var id: int
-var table_id: int
 
 static func make(player_name: String, player_id: int):
 	var p := Player.new()

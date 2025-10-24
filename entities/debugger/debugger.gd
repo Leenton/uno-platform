@@ -6,4 +6,4 @@ extends Node
 
 func _ready() -> void:
 	if debug_ip:
-		LobbyState.server_address = debug_ip
+		ServerState.server_address = debug_ip
