@@ -8,7 +8,7 @@ func push(type: Event.Type, payload: Dictionary, targets: Array[int]) -> void:
 	if multiplayer.is_server():
 		event.source = 1
 		for target in event.targets:
-			if multiplayer.has_multiplayer_peer() and multiplayer.get_peers().has(target):
+			if multiplayer.has_multiplayer_peer() and multiplayer.get_peers().has(target as int):
 				_client_append.rpc_id(target, event.serialise())
 	else:
 		event.source = multiplayer.get_unique_id()

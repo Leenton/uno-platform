@@ -1,6 +1,7 @@
 extends Node
 
 func _ready():
+	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	var peer = ENetMultiplayerPeer.new()
 	var error = peer.create_server(ServerState.PORT, ServerState.MAX_CONNECTIONS)
@@ -9,7 +10,11 @@ func _ready():
 		return error
 	multiplayer.multiplayer_peer = peer
 
+func _on_peer_connected(id):
+	print("Peer connected: %d" % id)
+
 func _on_peer_disconnected(id):
+	print("Peer disconnected: %d" % id)
 	ServerState.players[id].connection_status = Player.ConnectionStatus.DISCONNECTED
 	_update_player_list_for_clients()
 
@@ -154,12 +159,30 @@ func _start_game(event : Event):
 		# TODO: Initialize game data
 
 func _abort_game(event : Event):
+	# TODO: Implement abort game logic
 	pass
 
 func _kick_player(event : Event):
+	# TODO: Implement kick player logic
 	pass
 
 func _delete_table(event : Event):
+	var table_name: String = event.payload['table_name']
+	var table: Table = ServerState.tables.get(table_name, null)
+	if table and table.creator == ServerState.players[event.source].name:
+		ServerState.tables.erase(table_name)
+
+		EventBus.push(
+			Event.Type.UPDATE_TABLE_LIST,
+			{'tables': ServerState.get_tables_for_lobby_screen()},
+			ServerState.players.keys()
+		)
+
+		EventBus.push(
+			Event.Type.PLAYER_ENTER_LOBBY,
+			{'tables': ServerState.get_tables_for_lobby_screen()},
+			table.players.map(func(n): return ServerState.get_player_by_name(n) if ServerState.get_player_by_name(n) else null)
+		)
 	pass
 
 func _play_card(event : Event):
