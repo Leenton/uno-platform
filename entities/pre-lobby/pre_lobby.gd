@@ -12,7 +12,7 @@ func _on_join_button_pressed() -> void:
 	if (len(player_name) == 0):
 		return
 
-	LobbyState.join_lobby()
-
-	add_child(load("res://entities/lobby/lobby.tscn").instantiate())
-	
+	EventBus.push(
+		Event.Type.PLAYER_CONNECTED,
+		{'name' : player_name}
+	)

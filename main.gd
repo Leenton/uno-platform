@@ -8,8 +8,8 @@ func _ready() -> void:
 		print("Server started.")
 	else:
 		print("starting")
-		var pre_lobby : PackedScene = load("res://entities/pre-lobby/pre_lobby.tscn")
-		var lobby_instance = pre_lobby.instantiate()
-		add_child(lobby_instance)
-		print("Lobby started.")
- 
+		var client : Node = load("res://client/client.gd").new()
+		client.name = "Client"
+		add_child(client)
+		client.load_scenes()
+		print("Client Side Game Started.")

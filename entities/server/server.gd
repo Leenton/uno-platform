@@ -24,32 +24,19 @@ func _process(_delta: float) -> void:
 		return
 
 	match(e.type):
-		Event.Type.PLAYER_CONNECTED:
-			_player_connected(e)
-		Event.Type.CREATE_TABLE:
-			_create_table(e)
-		Event.Type.JOIN_TABLE:
-			_join_table(e)
-		Event.Type.SET_RULES:
-			_set_rules(e)
-		Event.Type.START_GAME:
-			_start_game(e)
-		Event.Type.ABORT_GAME:
-			_abort_game(e)
-		Event.Type.DELETE_TABLE:
-			_delete_table(e)
-		Event.Type.PLAY_CARD:
-			_play_card(e)
-		Event.Type.DRAW_CARD:
-			_draw_card(e)
-		Event.Type.CALL_OUT_UNO:
-			_call_out_uno(e)
-		Event.Type.REORDER_CARDS:
-			_reorder_cards(e)
-		Event.Type.FOCUS_ON_CARD:
-			_focus_on_card(e)
-		Event.Type.CHAT:
-			_chat(e)
+		Event.Type.PLAYER_CONNECTED: _player_connected(e)
+		Event.Type.CREATE_TABLE: _create_table(e)
+		Event.Type.JOIN_TABLE: _join_table(e)
+		Event.Type.SET_RULES: _set_rules(e)
+		Event.Type.START_GAME: _start_game(e)
+		Event.Type.ABORT_GAME: _abort_game(e)
+		Event.Type.DELETE_TABLE: _delete_table(e)
+		Event.Type.PLAY_CARD: _play_card(e)
+		Event.Type.DRAW_CARD: _draw_card(e)
+		Event.Type.CALL_OUT_UNO: _call_out_uno(e)
+		Event.Type.REORDER_CARDS: _reorder_cards(e)
+		Event.Type.FOCUS_ON_CARD: _focus_on_card(e)
+		Event.Type.CHAT: _chat(e)
 		null:
 			pass
 
@@ -91,6 +78,13 @@ func _update_player_list_for_clients():
 		ServerState.get_connected_players().map(func(p): return p.id)
 	)
 
+func _update_table_list_for_clients():
+	EventBus.push(
+		Event.Type.UPDATE_CLIENT_TABLE_LIST,
+		{'tables': ServerState.get_tables_for_lobby_screen()},
+		ServerState.get_connected_players().map(func(p): return p.id)
+	)
+
 func _create_table(event : Event):
 	var table_name: String = event.payload['table_name'].strip_edges()
 	if not ServerState.tables.get(table_name, null):
@@ -106,11 +100,7 @@ func _create_table(event : Event):
 
 	ServerState.tables[table_name] = Table.make(table_name, [creator],[], {}, creator)
 
-	EventBus.push(
-		Event.Type.UPDATE_TABLE_LIST,
-		{'tables': ServerState.get_tables_for_lobby_screen()},
-		ServerState.players.keys()
-	)	
+	_update_table_list_for_clients()
 
 	EventBus.push(
 		Event.Type.CLIENT_ENTER_TABLE,
@@ -145,11 +135,7 @@ func _set_rules(event : Event):
 	var table: Table = ServerState.tables.get(table_name, null)
 	if table and table.state == Table.State.WAITING and table.creator == ServerState.players[event.source].name:
 		table.rules = rules
-		EventBus.push(
-			Event.Type.UPDATE_TABLE_LIST,
-			{'tables': ServerState.get_tables_for_lobby_screen()},
-			ServerState.players.keys()
-		)
+		_update_table_list_for_clients()
 
 func _start_game(event : Event):
 	var table_name: String = event.payload['table_name']
@@ -172,11 +158,7 @@ func _delete_table(event : Event):
 	if table and table.creator == ServerState.players[event.source].name:
 		ServerState.tables.erase(table_name)
 
-		EventBus.push(
-			Event.Type.UPDATE_TABLE_LIST,
-			{'tables': ServerState.get_tables_for_lobby_screen()},
-			ServerState.players.keys()
-		)
+		_update_table_list_for_clients()
 
 		EventBus.push(
 			Event.Type.PLAYER_ENTER_LOBBY,

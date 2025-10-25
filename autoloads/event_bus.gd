@@ -2,7 +2,7 @@ extends Node
 
 var queue: Array[Event] = []
 
-func push(type: Event.Type, payload: Dictionary, targets: Array[int]) -> void:
+func push(type: Event.Type, payload: Dictionary, targets: Array[int] = []) -> void:
 	var event: Event = Event.make(type, payload, targets)
 
 	if multiplayer.is_server():
