@@ -11,6 +11,7 @@ func push(type: Event.Type, payload: Dictionary, targets: Array = []) -> void:
 		for target in event.targets:
 			if multiplayer.has_multiplayer_peer() and multiplayer.get_peers().has(target as int):
 				_client_append.rpc_id(target, event.serialise())
+				print("Server pushed event")
 	else:
 		event.source = multiplayer.get_unique_id()
 		_client_push.rpc_id(1, event.serialise())
