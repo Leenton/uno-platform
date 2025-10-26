@@ -69,8 +69,12 @@ func _read_event_bus() -> void:
 			pass
 
 func _update_table_list(tables : Array) -> void:
-	# ClientState.tables = tables
-	pass
+	var table_list: Array[Dictionary] = []
+	for table in tables:
+		if typeof(table) == TYPE_DICTIONARY:
+			table_list.append(table)
+
+	ClientState.tables = table_list
 
 func _player_name_taken(event : Event):
 	pass
