@@ -1,11 +1,12 @@
 extends Node
 
 var queue: Array[Event] = []
+var is_server: bool = false
 
 func push(type: Event.Type, payload: Dictionary, targets: Array[int] = []) -> void:
 	var event: Event = Event.make(type, payload, targets)
 
-	if multiplayer.is_server():
+	if is_server:
 		event.source = 1
 		for target in event.targets:
 			if multiplayer.has_multiplayer_peer() and multiplayer.get_peers().has(target as int):
