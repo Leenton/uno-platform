@@ -38,7 +38,7 @@ var source: int
 var targets: Array[int] = []
 var payload: Dictionary = {}
 
-static func make(event_type: int, event_payload := {}, event_targets := []) -> Event:
+static func make(event_type: int, event_payload : Dictionary = {}, event_targets : Array[int] = []) -> Event:
 	var e := Event.new()
 	e.type = event_type
 	e.payload = event_payload

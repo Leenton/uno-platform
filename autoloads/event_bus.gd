@@ -3,7 +3,7 @@ extends Node
 var queue: Array[Event] = []
 var is_server: bool = false
 
-func push(type: Event.Type, payload: Dictionary, targets: Array[int] = []) -> void:
+func push(type: Event.Type, payload: Dictionary, targets: Array = []) -> void:
 	var event: Event = Event.make(type, payload, targets)
 
 	if is_server:

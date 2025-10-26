@@ -1,24 +1,18 @@
 extends Node
 
 var pre_lobby_scene
-var lobby_scene
-var table_scene
-
-# var table_scene := preload("res://entities/table/table.tscn")
+# var lobby_scene
+# var table_scene
 
 func load_scenes() -> void:
 	pre_lobby_scene = load("res://entities/pre-lobby/pre_lobby.tscn")
-	lobby_scene = load("res://entities/lobby/lobby.tscn")
-	table_scene = load("res://entities/table/table.tscn")
+	# lobby_scene = load("res://entities/lobby/lobby.tscn")
+	# table_scene = load("res://entities/table/table.tscn")
 	
 	add_child(pre_lobby_scene.instantiate())
 
 func _process(_delta: float) -> void:
 	_read_event_bus()
-
-	
-
-	# Other per-frame client logic can go here
 
 func _read_event_bus() -> void:
 	var e = EventBus.read()
@@ -70,11 +64,7 @@ func _invalid_player_name(event : Event):
 func _player_enter_lobby(event : Event):
 	ClientState.tables = event.payload['tables']
 	
-
-	# pre_lobby_scene.
-	
 	# LobbyState.enter_lobby(event.payload['tables'])
-
 	# add_child(load("res://entities/lobby/lobby.tscn").instantiate())
 
 

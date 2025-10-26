@@ -8,7 +8,9 @@ func _ready():
 
 	if error:
 		return error
+
 	multiplayer.multiplayer_peer = peer
+	print("Server running")
 
 func _on_peer_connected(id):
 	print("Peer connected: %d" % id)

@@ -1,8 +1,8 @@
 extends Node
 
-const PORT = 8080
+const PORT = 42069
 const MAX_CONNECTIONS = 4095
-var server_address = '127.0.0.1'
+const SERVER_ADDRESS = '127.0.0.1'
 
 var players: Dictionary[int, Player] = {}
 var tables: Dictionary[String, Table] = {}
