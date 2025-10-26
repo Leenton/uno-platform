@@ -17,14 +17,21 @@ func _on_peer_connected(id):
 
 func _on_peer_disconnected(id):
 	print("Peer disconnected: %d" % id)
-	ServerState.players[id].connection_status = Player.ConnectionStatus.DISCONNECTED
-	_update_player_list_for_clients()
+	var player = ServerState.players.get(id, null)
+	if player:
+		ServerState.players[id].connection_status = Player.ConnectionStatus.DISCONNECTED
+		_update_player_list_for_clients()
+	
+	else:
+		# TODO: The  player id could not be found in our list of players, this is problem
+		pass
 
 func _process(_delta: float) -> void:
 	var e = EventBus.read()
 	if not e:
 		return
 
+	print("Server received event: %s from %s" % [str(e.type), str(e.source)])
 	match(e.type):
 		Event.Type.PLAYER_CONNECTED: _player_connected(e)
 		Event.Type.CREATE_TABLE: _create_table(e)
@@ -76,8 +83,8 @@ func _player_connected(event : Event):
 func _update_player_list_for_clients():
 	EventBus.push(
 		Event.Type.UPDATE_CLIENT_PLAYER_LIST,
-		{'players': ServerState.get_connected_players().map(func(p): return p.name)},
-		ServerState.get_connected_players().map(func(p): return p.id)
+		{'players': ServerState.get_connected_players().map(func(p : Player): return p.name)},
+		ServerState.get_connected_players().map(func(p : Player) -> int: return p.id)
 	)
 
 func _update_table_list_for_clients():

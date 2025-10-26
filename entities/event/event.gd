@@ -38,11 +38,15 @@ var source: int
 var targets: Array[int] = []
 var payload: Dictionary = {}
 
-static func make(event_type: int, event_payload : Dictionary = {}, event_targets : Array[int] = []) -> Event:
+static func make(event_type: int, event_payload : Dictionary = {}, event_targets : Array = []) -> Event:
+	var t : Array[int] = []
+	for target in event_targets:
+		t.append(target as int)
+
 	var e := Event.new()
 	e.type = event_type
 	e.payload = event_payload
-	e.targets = event_targets
+	e.targets = t
 
 	return e
 

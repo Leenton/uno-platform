@@ -1,6 +1,6 @@
 extends Node
 
-var players: Dictionary[int, Player] = {}
+var players: Array[String] = []
 var tables: Dictionary[String, Table] = {}
 
 var player_name: String

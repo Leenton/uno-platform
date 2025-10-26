@@ -1,15 +1,27 @@
 extends Node
 
-var pre_lobby_scene
+var current_scene = null
 # var lobby_scene
 # var table_scene
 
-func load_scenes() -> void:
-	pre_lobby_scene = load("res://entities/pre-lobby/pre_lobby.tscn")
-	# lobby_scene = load("res://entities/lobby/lobby.tscn")
-	# table_scene = load("res://entities/table/table.tscn")
-	
-	add_child(pre_lobby_scene.instantiate())
+func _switch_scene(scene: String) -> void:
+	if current_scene:
+		current_scene.queue_free()
+
+	match scene:
+		"pre_lobby":
+			current_scene = preload("res://entities/pre-lobby/pre_lobby.tscn").instantiate()
+		"lobby":
+			current_scene = preload("res://entities/lobby/lobby.tscn").instantiate()
+		"table":
+			current_scene = preload("res://entities/table-view/table_view.tscn").instantiate()
+		_:
+			return
+
+	add_child(current_scene)
+
+func _ready() -> void:
+	_switch_scene("pre_lobby")
 
 func _process(_delta: float) -> void:
 	_read_event_bus()
@@ -27,33 +39,38 @@ func _read_event_bus() -> void:
 
 		# Lobby events
 
-
 		# Table events		
 		Event.Type.TABLE_ALREADY_EXISTS:
-			LobbyState.game_started()
+			pass
 
 		Event.Type.PLAYER_JOINED_NON_EXISTENT_TABLE:
-			LobbyState.game_started()
+			pass
 
 		Event.Type.CLIENT_ENTER_TABLE:
-			LobbyState.game_started()
+			pass
 
 		# Game events
 		Event.Type.GAME_STARTED:
-			LobbyState.game_started()
-		
+			pass
+
 		# Server data sync events
 		Event.Type.UPDATE_CLIENT_PLAYER_LIST:
-			ClientState.players = e.payload['players']
+			var player_list: Array[String] = []
+			player_list.assign(e.payload['players'])
+			ClientState.players = player_list
 
 		Event.Type.UPDATE_CLIENT_TABLE_LIST:
-			ClientState.tables = e.payload['tables']
+			_update_table_list(e.payload['tables'])
 
 		Event.Type.CHAT:
 			_chat(e)
 
 		null:
 			pass
+
+func _update_table_list(tables : Array) -> void:
+	# ClientState.tables = tables
+	pass
 
 func _player_name_taken(event : Event):
 	pass
@@ -62,12 +79,8 @@ func _invalid_player_name(event : Event):
 	pass
 
 func _player_enter_lobby(event : Event):
-	ClientState.tables = event.payload['tables']
-	
-	# LobbyState.enter_lobby(event.payload['tables'])
-	# add_child(load("res://entities/lobby/lobby.tscn").instantiate())
-
+	_update_table_list(event.payload['tables'])
+	_switch_scene("lobby")
 
 func _chat(event : Event):
 	pass
-	# LobbyState.game_started()

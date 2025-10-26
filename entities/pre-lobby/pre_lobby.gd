@@ -54,4 +54,3 @@ func _on_connected_to_server() -> void:
 # 		return error
 
 # 	multiplayer.multiplayer_peer = peer
-
