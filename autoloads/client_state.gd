@@ -4,3 +4,4 @@ var players: Array[String] = []
 var tables: Array[Dictionary] = []
 
 var player_name: String
+var current_table: Dictionary = {}

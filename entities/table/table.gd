@@ -3,8 +3,9 @@ class_name Table
 var name: String
 var players: Array[String] = []
 var spectators: Array[String] = []
+var spectators_can_see_cards: bool = false
 var rules: Dictionary = {}
-var max_players: int = 12
+var max_players: int = 10
 var state: Table.State
 var creator: String
 var game_data: Dictionary = {
@@ -31,7 +32,7 @@ static func make(
     t.rules = table_rules
     t.state = Table.State.WAITING
     t.creator = table_creator
-
+    t.spectators_can_see_cards = false
     return t
 
 func get_data():

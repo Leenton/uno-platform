@@ -13,12 +13,10 @@ func _on_create_table_button_pressed() -> void:
 	if(len(table_name) == 0 ):
 		return
 
-	pass	
-	# elif (table_name.to_lower() in LobbyState.tables.keys().map(func(table): return table.to_lower())):
-	# 	return
-
-	# LobbyState.create_table(table_name)
- 
+	EventBus.push(
+		Event.Type.CREATE_TABLE,
+		{'name' : table_name}
+	)
 
 func _process(delta: float) -> void:
 	pass

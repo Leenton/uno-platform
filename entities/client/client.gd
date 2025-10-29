@@ -47,7 +47,10 @@ func _read_event_bus() -> void:
 			pass
 
 		Event.Type.CLIENT_ENTER_TABLE:
-			pass
+			var table = e.payload['table']
+			if typeof(table) == TYPE_DICTIONARY and table.size() > 0:
+				ClientState.current_table = table
+				_switch_scene("table")
 
 		# Game events
 		Event.Type.GAME_STARTED:
