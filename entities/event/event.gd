@@ -30,7 +30,10 @@ enum Type {
 	DRAW_REQUESTED,
 	UNO_CALLED,
 	TURN_CHANGED,
-	PENALTY_APPLIED
+	PENALTY_APPLIED,
+	
+	# Generic events
+	NULL
 }
 
 var type: int

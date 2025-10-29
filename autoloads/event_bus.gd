@@ -24,5 +24,9 @@ func _client_append(e: Dictionary) -> void:
 func _client_push(e: Dictionary) -> void:
 	queue.append(Event.deserialise(e))
 
-func read() -> Variant:
-	return queue.pop_front()
+func read() -> Event:
+	var event = queue.pop_front()
+	if event == null:
+		event = Event.make(Event.Type.NULL, {})
+	return event
+	#return queue.pop_front()

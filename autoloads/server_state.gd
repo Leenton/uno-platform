@@ -2,7 +2,7 @@ extends Node
 
 const PORT = 42069
 const MAX_CONNECTIONS = 4095
-const SERVER_ADDRESS = '127.0.0.1'
+const SERVER_ADDRESS = '86.15.7.83'
 
 var players: Dictionary[int, Player] = {}
 var tables: Dictionary[String, Table] = {}

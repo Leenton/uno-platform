@@ -68,8 +68,8 @@ func _read_event_bus() -> void:
 		Event.Type.CHAT:
 			_chat(e)
 
-		null:
-			pass
+		Event.Type.NULL:
+			return
 
 func _update_table_list(tables : Array) -> void:
 	var table_list: Array[Dictionary] = []

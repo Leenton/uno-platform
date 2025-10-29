@@ -46,8 +46,8 @@ func _process(_delta: float) -> void:
 		Event.Type.REORDER_CARDS: _reorder_cards(e)
 		Event.Type.FOCUS_ON_CARD: _focus_on_card(e)
 		Event.Type.CHAT: _chat(e)
-		null:
-			pass
+		Event.Type.NULL:
+			return
 
 func _player_connected(event : Event):
 	# Validate player name
@@ -95,7 +95,7 @@ func _update_table_list_for_clients():
 	)
 
 func _create_table(event : Event):
-	var table_name: String = event.payload['table_name'].strip_edges()
+	var table_name: String = event.payload['name'].strip_edges()
 	if not ServerState.tables.get(table_name, null):
 		EventBus.push(
 			Event.Type.TABLE_ALREADY_EXISTS,
