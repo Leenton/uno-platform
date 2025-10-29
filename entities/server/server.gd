@@ -95,7 +95,7 @@ func _update_table_list_for_clients():
 	)
 
 func _create_table(event : Event):
-	var table_name: String = event.payload['name'].strip_edges()
+	var table_name: String = event.payload['table_name'].strip_edges()
 	if not ServerState.tables.get(table_name, null):
 		EventBus.push(
 			Event.Type.TABLE_ALREADY_EXISTS,

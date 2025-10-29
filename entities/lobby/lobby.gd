@@ -15,7 +15,7 @@ func _on_create_table_button_pressed() -> void:
 
 	EventBus.push(
 		Event.Type.CREATE_TABLE,
-		{'name' : table_name}
+		{'table_name' : table_name}
 	)
 
 func _process(delta: float) -> void:
