@@ -18,9 +18,9 @@ config/icon="res://icon.svg"
 [autoload]
 
 ServerState="*res://autoloads/server_state.gd"
-Debugger="*res://entities/debugger/debugger.gd"
 EventBus="*res://autoloads/event_bus.gd"
 ClientState="*res://autoloads/client_state.gd"
+Debugger="*res://entities/debugger/debugger.tscn"
 
 [display]
 

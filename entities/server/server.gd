@@ -65,6 +65,7 @@ func _player_connected(event : Event):
 	# Check if the player name belongs to a disconnected player
 	if existing_player and existing_player.connection_status == Player.ConnectionStatus.DISCONNECTED:
 		existing_player.id = event.source
+		existing_player.connection_status = Player.ConnectionStatus.CONNECTED
 		_update_player_list_for_clients()
 
 		# If the player was in a game, re-add them to it

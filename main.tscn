@@ -7,4 +7,4 @@
 script = ExtResource("1_ig7tw")
 
 [node name="Debugger" parent="." instance=ExtResource("2_0xm2m")]
-debug_ip = "86.15.7.83"
+server_mode = true
