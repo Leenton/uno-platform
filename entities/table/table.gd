@@ -36,4 +36,14 @@ static func make(
     return t
 
 func get_data():
-    return []
+    return {
+        "name": name,
+        "players": players,
+        "spectators": spectators,
+        "spectators_can_see_cards": spectators_can_see_cards,
+        "rules": rules,
+        "max_players": max_players,
+        "state": state,
+        "creator": creator,
+        "game_data": game_data
+    }

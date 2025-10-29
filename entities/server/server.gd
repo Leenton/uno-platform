@@ -4,7 +4,7 @@ func _ready():
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	var peer = ENetMultiplayerPeer.new()
-	var error = peer.create_server(ServerState.PORT, ServerState.MAX_CONNECTIONS)
+	var error = peer.create_server(ServerState.port, ServerState.MAX_CONNECTIONS)
 
 	if error:
 		return error
@@ -31,7 +31,6 @@ func _process(_delta: float) -> void:
 	if not e:
 		return
 
-	print("Server received event: %s from %s" % [str(e.type), str(e.source)])
 	match(e.type):
 		Event.Type.PLAYER_CONNECTED: _player_connected(e)
 		Event.Type.CREATE_TABLE: _create_table(e)
@@ -97,7 +96,7 @@ func _update_table_list_for_clients():
 
 func _create_table(event : Event):
 	var table_name: String = event.payload['table_name'].strip_edges()
-	if not ServerState.tables.get(table_name, null):
+	if ServerState.tables.get(table_name, null):
 		EventBus.push(
 			Event.Type.TABLE_ALREADY_EXISTS,
 			{'tables': ServerState.get_tables_for_lobby_screen()},
