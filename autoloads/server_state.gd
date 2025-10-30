@@ -1,11 +1,14 @@
 extends Node
 
 const MAX_CONNECTIONS = 4095
+
 var port = 42069
-var server_address = '86.15.7.83'
+# TODO Consider where this belongs as the server never uses it
+var server_address = '178.79.148.55'
 
 var players: Dictionary[int, Player] = {}
 var tables: Dictionary[String, Table] = {}
+
 
 func get_player_id_by_name(player_name: Variant) -> int:
 	for player_id in players.keys():

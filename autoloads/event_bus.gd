@@ -20,6 +20,8 @@ func push(type: Event.Type, payload: Dictionary, targets: Array = []) -> void:
 func _client_append(e: Dictionary) -> void:
 	queue.append(Event.deserialise(e))
 
+
+# TODO Consider validating e before adding it to the queue?
 @rpc("any_peer", "reliable")
 func _client_push(e: Dictionary) -> void:
 	queue.append(Event.deserialise(e))

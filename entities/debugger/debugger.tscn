@@ -4,4 +4,3 @@
 
 [node name="Debugger" type="Node"]
 script = ExtResource("1_wl78d")
-server_mode = true
