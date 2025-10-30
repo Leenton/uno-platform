@@ -1,8 +1,6 @@
 extends Node
 
 var current_scene = null
-# var lobby_scene
-# var table_scene
 
 func _switch_scene(scene: String) -> void:
 	if current_scene:

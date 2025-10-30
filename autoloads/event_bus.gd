@@ -29,4 +29,3 @@ func read() -> Event:
 	if event == null:
 		event = Event.make(Event.Type.NULL, {})
 	return event
-	#return queue.pop_front()

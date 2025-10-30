@@ -4,6 +4,7 @@ extends Node
 @onready var join_button := $Control/HBoxContainer/VBoxContainer/JoinLobbyButton
 
 func _ready() -> void:
+	name_text_edit.text = ClientState.player_name
 	join_button.pressed.connect(_on_join_button_pressed)
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
@@ -14,8 +15,9 @@ func _on_join_button_pressed() -> void:
 	if (len(player_name) == 0):
 		return
 
+	ClientState.set_player_name_value(player_name)
+
 	print("Attempting to connect to server...")
-	ClientState.player_name = player_name
 	var peer = ENetMultiplayerPeer.new()
 	var error = peer.create_client(ServerState.server_address, ServerState.port)
 	if error != OK:

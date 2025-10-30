@@ -3,11 +3,22 @@ class_name Table
 var name: String
 var players: Array[String] = []
 var spectators: Array[String] = []
-var spectators_can_see_cards: bool = false
-var rules: Dictionary = {}
-var max_players: int = 10
+
 var state: Table.State
 var creator: String
+var password : String = ""
+
+
+var draw_to_play: bool = true
+var play_at_draw: bool = false
+var jump_in_allowed: bool = true
+var stack_cards: bool = true
+var swap_on_seven: bool = false
+var swap_on_zero: bool = false
+var max_players: int = 10
+var spectators_can_see_cards: bool = false
+var time_per_turn: int = 30
+
 var game_data: Dictionary = {
 }
 
@@ -41,7 +52,12 @@ func get_data():
         "players": players,
         "spectators": spectators,
         "spectators_can_see_cards": spectators_can_see_cards,
-        "rules": rules,
+        "draw_to_play": draw_to_play,
+        "play_at_draw": play_at_draw,
+        "jump_in_allowed": jump_in_allowed,
+        "stack_cards": stack_cards,
+        "swap_on_seven": swap_on_seven,
+        "swap_on_zero": swap_on_zero,
         "max_players": max_players,
         "state": state,
         "creator": creator,

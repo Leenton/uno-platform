@@ -38,6 +38,10 @@ func _process(_delta: float) -> void:
 		Event.Type.SET_RULES: _set_rules(e)
 		Event.Type.START_GAME: _start_game(e)
 		Event.Type.ABORT_GAME: _abort_game(e)
+		Event.Type.KICK_PLAYER: _kick_player(e)
+		Event.Type.LEAVE_TABLE: _leave_table(e)
+		Event.Type.SET_READY_STATUS: _set_ready_status(e)
+		Event.Type.PROMOTE_TO_CREATOR: _promote_to_creator(e)
 		Event.Type.DELETE_TABLE: _delete_table(e)
 		Event.Type.PLAY_CARD: _play_card(e)
 		Event.Type.DRAW_CARD: _draw_card(e)
@@ -50,12 +54,13 @@ func _process(_delta: float) -> void:
 
 func _player_connected(event : Event):
 	# Validate player name
-	if event.payload['name'].strip_edges().length() == 0:
+	var player_name := str(event.payload.get('name', '')).strip_edges()
+	if player_name.length() == 0:
 		EventBus.push(Event.Type.INVALID_PLAYER_NAME, {}, [event.source])
 		return
 
 	# Check if the player name is already taken by a connected player
-	var existing_player = ServerState.get_player_by_name(event.payload['name'])
+	var existing_player = ServerState.get_player_by_name(player_name)
 
 	if existing_player and existing_player.connection_status == Player.ConnectionStatus.CONNECTED:
 		EventBus.push(Event.Type.PLAYER_NAME_TAKEN, {}, [event.source])
@@ -75,7 +80,7 @@ func _player_connected(event : Event):
 
 	else:
 		# Add the new player
-		ServerState.players[event.source] = Player.make(event.payload['name'], event.source)
+		ServerState.players[event.source] = Player.make(player_name, event.source)
 		_update_player_list_for_clients()
 
 	EventBus.push(Event.Type.PLAYER_ENTER_LOBBY, {'tables': ServerState.get_tables_for_lobby_screen()}, [event.source])
@@ -95,7 +100,7 @@ func _update_table_list_for_clients():
 	)
 
 func _create_table(event : Event):
-	var table_name: String = event.payload['table_name'].strip_edges()
+	var table_name := str(event.payload.get('table_name', '')).strip_edges()
 	if ServerState.tables.get(table_name, null):
 		EventBus.push(
 			Event.Type.TABLE_ALREADY_EXISTS,
@@ -113,15 +118,12 @@ func _create_table(event : Event):
 
 	EventBus.push(
 		Event.Type.CLIENT_ENTER_TABLE,
-		{'table': ServerState.tables[event.payload['table_name']].get_data()},
+		{'table': ServerState.tables[table_name].get_data()},
 		[event.source]
 	)
 
 func _join_table(event : Event):
-	var table_name: String = event.payload['table_name']
-	var player_name: String = ServerState.players[event.source].name
-
-	var table: Table = ServerState.tables.get(table_name, null)
+	var table := ServerState.get_table_by_name(event.payload.get('table_name'))
 	if table == null:
 		EventBus.push(
 			Event.Type.PLAYER_JOINED_NON_EXISTENT_TABLE,
@@ -129,7 +131,7 @@ func _join_table(event : Event):
 			[event.source]
 		)
 
-	table.players.append(player_name)
+	table.players.append(ServerState.players[event.source].name)
 
 	EventBus.push(
 		Event.Type.CLIENT_ENTER_TABLE,
@@ -138,43 +140,132 @@ func _join_table(event : Event):
 	)
 
 func _set_rules(event : Event):
-	var table_name: String = event.payload['table_name']
-	var rules: Dictionary = event.payload['rules']
-
-	var table: Table = ServerState.tables.get(table_name, null)
+	var table := ServerState.get_table_by_name(event.payload.get('table_name'))
+	
 	if table and table.state == Table.State.WAITING and table.creator == ServerState.players[event.source].name:
-		table.rules = rules
+		table.draw_to_play = event.payload['draw_to_play']
+		table.play_at_draw = event.payload['play_at_draw']
+		table.jump_in_allowed = event.payload['jump_in_allowed']
+		table.stack_cards = event.payload['stack_cards']
+		table.swap_on_seven = event.payload['swap_on_seven']
+		table.swap_on_zero = event.payload['swap_on_zero']
+		table.max_players = event.payload['max_players']
+		table.time_per_turn = event.payload['time_per_turn']
+		table.spectators_can_see_cards = event.payload['spectators_can_see_cards']
+
 		_update_table_list_for_clients()
 
 func _start_game(event : Event):
-	var table_name: String = event.payload['table_name']
-	var table: Table = ServerState.tables.get(table_name, null)
-	if table and table.state == Table.State.WAITING and table.creator == ServerState.players[event.source].name:
+	var table := ServerState.get_table_by_name(event.payload.get('table_name'))
+	
+	if (table
+		and table.state == Table.State.WAITING
+		and table.creator == ServerState.players[event.source].name
+		and table.playsers.size() >= 2
+		and table.max_players >= table.players.size()
+		and ( # Check the ready status of all players
+			# TODO: figure out how to store ready status and implement a way to check it here
+			true
+		 )
+	):
 		table.state = Table.State.IN_PROGRESS
 		# TODO: Initialize game data
 
 func _abort_game(event : Event):
-	# TODO: Implement abort game logic
-	pass
+	var table := ServerState.get_table_by_name(event.payload.get('table_name'))
+	if (table
+		and table.state == Table.State.IN_PROGRESS
+		and table.creator == ServerState.players[event.source].name
+	):
+		# Reset table state and game data
+		table.game_data = {} # TODO: re structure game data properly when we know what the data looks like
+		table.state = Table.State.WAITING
+		_update_table_list_for_clients()
+
+		# Notify all players in the table that the game has been aborted
+		EventBus.push(
+			Event.Type.PLAYER_ENTER_LOBBY,
+			{'tables': ServerState.get_tables_for_lobby_screen()},
+			[table.players.map(
+				func(n): return ServerState.get_player_id_by_name(n)
+			)]
+		)
 
 func _kick_player(event : Event):
-	# TODO: Implement kick player logic
-	pass
+	var table := ServerState.get_table_by_name(event.payload.get('table_name'))
+	var player_to_kick := ServerState.get_player_by_name(event.payload.get('player_name'))
+	var can_kick := (
+		table
+		and table.creator == ServerState.players[event.source].name
+		and player_to_kick
+		and player_to_kick.name != table.creator
+		and table.players.has(player_to_kick.name) # TODO refactor when we re structure players as Dictionary
+	)
+
+	if can_kick and (table.state == Table.State.WAITING or table.state == Table.State.COMPLETED):
+		table.players.erase(player_to_kick.name)
+		_update_table_list_for_clients()
+
+		EventBus.push(
+			Event.Type.PLAYER_ENTER_LOBBY,
+			{'tables': ServerState.get_tables_for_lobby_screen()},
+			[player_to_kick.id]
+		)
+
+	if can_kick and table.state == Table.State.IN_PROGRESS:
+		# TODO: Implement kick player logic when the game is in progress
+		pass
+
+func _leave_table(event : Event):
+	var table := ServerState.get_table_by_name(event.payload.get('table_name'))
+	
+	if table and (table.state == Table.State.WAITING or table.state == Table.State.COMPLETED):
+		table.players.erase(ServerState.players[event.source].name)
+		_update_table_list_for_clients()
+
+		EventBus.push(
+			Event.Type.PLAYER_ENTER_LOBBY,
+			{'tables': ServerState.get_tables_for_lobby_screen()},
+			[event.source]
+		)
+
+	if table and table.state == Table.State.IN_PROGRESS:
+		# TODO: Handle player leaving during an active game
+		pass
+
+func _set_ready_status(event : Event):
+	var player : Player = ServerState.players.get(event.source, -1)
+	if not player:
+		return
+
+	var player_ready = event.payload.get('ready', null)
+	if player_ready is bool:
+		# TODO: Implement set ready status logic
+		pass
+
+func _promote_to_creator(event : Event):
+	var table := ServerState.get_table_by_name(event.payload.get('table_name'))
+	var new_creator := ServerState.get_player_by_name(event.payload.get('new_creator'))
+	
+	if new_creator and table and table.creator.to_lower() == ServerState.players[event.source].name.to_lower():
+		table.creator = new_creator.name
+		_update_table_list_for_clients()
 
 func _delete_table(event : Event):
-	var table_name: String = event.payload['table_name']
-	var table: Table = ServerState.tables.get(table_name, null)
+	var table := ServerState.get_table_by_name(event.payload.get('table_name'))
+	
 	if table and table.creator == ServerState.players[event.source].name:
-		ServerState.tables.erase(table_name)
+		ServerState.tables.erase(table.name)
 
 		_update_table_list_for_clients()
 
 		EventBus.push(
 			Event.Type.PLAYER_ENTER_LOBBY,
 			{'tables': ServerState.get_tables_for_lobby_screen()},
-			table.players.map(func(n): return ServerState.get_player_by_name(n) if ServerState.get_player_by_name(n) else null)
+			table.players.map(
+				func(n): return ServerState.get_player_by_name(n) if ServerState.get_player_by_name(n) else null
+			)
 		)
-	pass
 
 func _play_card(event : Event):
 	pass
