@@ -3,6 +3,7 @@ class_name Event
 enum Type {
 	# Server side events
 	PLAYER_CONNECTED,
+	PLAYER_DISCONNECTED,
 	CREATE_TABLE,
 	JOIN_TABLE,
 	SET_RULES,

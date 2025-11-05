@@ -5,5 +5,11 @@
 [node name="LobbyPlayerList" type="Node"]
 script = ExtResource("1_8uwer")
 
-[node name="ItemList" type="ItemList" parent="."]
-offset_right = 40.0
+[node name="PlayerItemList" type="ItemList" parent="."]
+unique_name_in_owner = true
+offset_right = 123.0
+offset_bottom = 210.0
+item_count = 2
+item_0/text = "Bob"
+item_0/selectable = false
+item_1/text = "Bill"

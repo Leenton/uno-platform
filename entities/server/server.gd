@@ -23,8 +23,7 @@ func _on_peer_disconnected(id):
 		# We could tell everyone else who specifically joined/left this will reduce the size of the message sent
 		# And allow clients to be reactive to players disconnecting. (Food for thought)
 		ServerState.players[id].connection_status = Player.ConnectionStatus.DISCONNECTED
-		_update_player_list_for_clients()
-	
+		EventBus.push(Event.Type.PLAYER_DISCONNECTED, {'name' = player.name}, ServerState.get_connected_players_ids())
 	else:
 		# TODO: The  player id could not be found in our list of players, this is problem
 		pass
@@ -71,9 +70,9 @@ func _player_connected(event : Event):
 
 	# Check if the player name belongs to a disconnected player
 	if existing_player and existing_player.connection_status == Player.ConnectionStatus.DISCONNECTED:
+		EventBus.push(Event.Type.PLAYER_CONNECTED, {'name' = player_name}, ServerState.get_connected_players_ids())
 		existing_player.id = event.source
 		existing_player.connection_status = Player.ConnectionStatus.CONNECTED
-		_update_player_list_for_clients()
 
 		# If the player was in a game, re-add them to it
 		if ServerState.get_player_joined_table(existing_player.name) != '':
@@ -83,17 +82,18 @@ func _player_connected(event : Event):
 
 	else:
 		# Add the new player
+		EventBus.push(Event.Type.PLAYER_CONNECTED, {'name' = player_name}, ServerState.get_connected_players_ids())
 		ServerState.players[event.source] = Player.make(player_name, event.source)
-		_update_player_list_for_clients()
+		
+	EventBus.push(Event.Type.PLAYER_ENTER_LOBBY, {'tables': ServerState.get_tables_for_lobby_screen(),
+			'players': ServerState.get_connected_players().map(func(p): return p.name)}, [event.source])
 
-	EventBus.push(Event.Type.PLAYER_ENTER_LOBBY, {'tables': ServerState.get_tables_for_lobby_screen()}, [event.source])
-
-func _update_player_list_for_clients():
-	EventBus.push(
-		Event.Type.UPDATE_CLIENT_PLAYER_LIST,
-		{'players': ServerState.get_connected_players().map(func(p : Player): return p.name)},
-		ServerState.get_connected_players().map(func(p : Player) -> int: return p.id)
-	)
+#func _update_player_list_for_clients():
+	#EventBus.push(itali
+		#Event.Type.UPDATE_CLIENT_PLAYER_LIST,
+		#{'players': ServerState.get_connected_players().map(func(p : Player): return p.name)},
+		#ServerState.get_connected_players().map(func(p : Player) -> int: return p.id)
+	#)
 
 func _update_table_list_for_clients():
 	EventBus.push(

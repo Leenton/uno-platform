@@ -59,8 +59,14 @@ func _read_event_bus() -> void:
 			var player_list: Array[String] = []
 			player_list.assign(e.payload['players'])
 			ClientState.players = player_list
+		
+		Event.Type.PLAYER_CONNECTED:
+			ClientState.players.append(e.payload['name'])
 			
-
+		Event.Type.PLAYER_DISCONNECTED:
+			ClientState.players.remove_at(ClientState.players.find(e.payload['name']))
+			
+			
 		Event.Type.UPDATE_CLIENT_TABLE_LIST:
 			_update_table_list(e.payload['tables'])
 

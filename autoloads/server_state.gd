@@ -45,6 +45,15 @@ func get_connected_players() -> Array[Player]:
 	
 	return connected_players
 
+func get_connected_players_ids() -> Array[int]:
+	var connected_players_ids: Array[int] = []
+	for player_id in players.keys():
+		if players[player_id].connection_status == Player.ConnectionStatus.CONNECTED:
+			connected_players_ids.append(player_id)
+	
+	return connected_players_ids
+
+
 func get_disconnected_players() -> Array[Player]:
 	var disconnected_players: Array[Player] = []
 	for player_id in players.keys():
