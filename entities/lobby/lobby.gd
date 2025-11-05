@@ -5,9 +5,6 @@ extends Node
 
 func _ready() -> void:
 	create_table_button.pressed.connect(_on_create_table_button_pressed)
-	add_child(load("res://entities/lobby-player-list/lobby_player_list.tscn").instantiate())
-
-
 
 func _on_create_table_button_pressed() -> void:
 	var table_name: String = table_name_text_edit.text.strip_edges()

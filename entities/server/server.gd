@@ -85,15 +85,13 @@ func _player_connected(event : Event):
 		EventBus.push(Event.Type.PLAYER_CONNECTED, {'name' = player_name}, ServerState.get_connected_players_ids())
 		ServerState.players[event.source] = Player.make(player_name, event.source)
 		
-	EventBus.push(Event.Type.PLAYER_ENTER_LOBBY, {'tables': ServerState.get_tables_for_lobby_screen(),
-			'players': ServerState.get_connected_players().map(func(p): return p.name)}, [event.source])
-
-#func _update_player_list_for_clients():
-	#EventBus.push(itali
-		#Event.Type.UPDATE_CLIENT_PLAYER_LIST,
-		#{'players': ServerState.get_connected_players().map(func(p : Player): return p.name)},
-		#ServerState.get_connected_players().map(func(p : Player) -> int: return p.id)
-	#)
+	EventBus.push(
+		Event.Type.PLAYER_ENTER_LOBBY,
+		{
+			'tables': ServerState.get_tables_for_lobby_screen(),
+			'players': ServerState.get_connected_players().map(func(p): return p.name)},
+		[event.source]
+	)
 
 func _update_table_list_for_clients():
 	EventBus.push(

@@ -27,7 +27,6 @@ enum Type {
 	TABLE_ALREADY_EXISTS,
 	PLAYER_JOINED_NON_EXISTENT_TABLE,
 	PLAYER_ENTER_LOBBY,
-	UPDATE_CLIENT_PLAYER_LIST,
 	UPDATE_CLIENT_TABLE_LIST,
 	CLIENT_ENTER_TABLE,
 	GAME_STARTED,
@@ -69,6 +68,7 @@ func serialise() -> Dictionary:
 static func deserialise(e: Dictionary) -> Event:
 	var event := Event.new()
 
+	#TODO: This is unsafe - validate e before using it
 	event.type = e['type']
 	event.source = e['source']
 	event.payload = e['payload']
