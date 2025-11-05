@@ -67,6 +67,7 @@ func serialise() -> Dictionary:
 
 static func deserialise(e: Dictionary) -> Event:
 	var event := Event.new()
+
 	event.type = e['type']
 	event.source = e['source']
 	event.payload = e['payload']

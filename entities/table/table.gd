@@ -23,43 +23,43 @@ var game_data: Dictionary = {
 }
 
 enum State {
-    WAITING,
-    IN_PROGRESS,
-    PAUSED,
-    COMPLETED
+	WAITING,
+	IN_PROGRESS,
+	PAUSED,
+	COMPLETED
 }
 
 static func make(
-    table_name: String,
-    table_players: Array[String],
-    table_spectators: Array[String],
-    table_rules: Dictionary,
-    table_creator: String
+	table_name: String,
+	table_players: Array[String],
+	table_spectators: Array[String],
+	table_rules: Dictionary,
+	table_creator: String
 ) -> Table:
-    var t := Table.new()
-    t.name = table_name
-    t.players = table_players
-    t.spectators = table_spectators
-    t.rules = table_rules
-    t.state = Table.State.WAITING
-    t.creator = table_creator
-    t.spectators_can_see_cards = false
-    return t
+	var t := Table.new()
+	t.name = table_name
+	t.players = table_players
+	t.spectators = table_spectators
+	t.rules = table_rules
+	t.state = Table.State.WAITING
+	t.creator = table_creator
+	t.spectators_can_see_cards = false
+	return t
 
 func get_data():
-    return {
-        "name": name,
-        "players": players,
-        "spectators": spectators,
-        "spectators_can_see_cards": spectators_can_see_cards,
-        "draw_to_play": draw_to_play,
-        "play_at_draw": play_at_draw,
-        "jump_in_allowed": jump_in_allowed,
-        "stack_cards": stack_cards,
-        "swap_on_seven": swap_on_seven,
-        "swap_on_zero": swap_on_zero,
-        "max_players": max_players,
-        "state": state,
-        "creator": creator,
-        "game_data": game_data
-    }
+	return {
+		"name": name,
+		"players": players,
+		"spectators": spectators,
+		"spectators_can_see_cards": spectators_can_see_cards,
+		"draw_to_play": draw_to_play,
+		"play_at_draw": play_at_draw,
+		"jump_in_allowed": jump_in_allowed,
+		"stack_cards": stack_cards,
+		"swap_on_seven": swap_on_seven,
+		"swap_on_zero": swap_on_zero,
+		"max_players": max_players,
+		"state": state,
+		"creator": creator,
+		"game_data": game_data
+	}

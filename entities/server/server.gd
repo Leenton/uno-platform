@@ -19,6 +19,9 @@ func _on_peer_disconnected(id):
 	print("Peer disconnected: %d" % id)
 	var player = ServerState.players.get(id, null)
 	if player:
+		# TODO: Maybe we should just yell the new player lis to just the shmuch that joined instead of everyone? 
+		# We could tell everyone else who specifically joined/left this will reduce the size of the message sent
+		# And allow clients to be reactive to players disconnecting. (Food for thought)
 		ServerState.players[id].connection_status = Player.ConnectionStatus.DISCONNECTED
 		_update_player_list_for_clients()
 	

@@ -59,6 +59,7 @@ func _read_event_bus() -> void:
 			var player_list: Array[String] = []
 			player_list.assign(e.payload['players'])
 			ClientState.players = player_list
+			
 
 		Event.Type.UPDATE_CLIENT_TABLE_LIST:
 			_update_table_list(e.payload['tables'])

@@ -24,7 +24,9 @@ func _client_append(e: Dictionary) -> void:
 # TODO Consider validating e before adding it to the queue?
 @rpc("any_peer", "reliable")
 func _client_push(e: Dictionary) -> void:
-	queue.append(Event.deserialise(e))
+	var event := Event.deserialise(e)
+	if event:
+		queue.append(event)
 
 func read() -> Event:
 	var event = queue.pop_front()
