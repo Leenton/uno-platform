@@ -33,14 +33,12 @@ static func make(
 	table_name: String,
 	table_players: Array[String],
 	table_spectators: Array[String],
-	table_rules: Dictionary,
 	table_creator: String
 ) -> Table:
 	var t := Table.new()
 	t.name = table_name
 	t.players = table_players
 	t.spectators = table_spectators
-	t.rules = table_rules
 	t.state = Table.State.WAITING
 	t.creator = table_creator
 	t.spectators_can_see_cards = false

@@ -2,6 +2,9 @@ extends Node
 
 @onready var table_name_text_edit := %TableNameTextEdit
 @onready var create_table_button := %CreateTableButton
+@onready var player_item_list := %PlayerItemList
+
+var player_list = []
 
 func _ready() -> void:
 	create_table_button.pressed.connect(_on_create_table_button_pressed)
@@ -18,4 +21,9 @@ func _on_create_table_button_pressed() -> void:
 	)
 
 func _process(delta: float) -> void:
-	pass
+	if (player_list.size() != ClientState.players.size()):
+		player_list = ClientState.players.duplicate(true)
+		player_item_list.clear()
+
+		for player in ClientState.players:
+			player_item_list.add_item(player)
